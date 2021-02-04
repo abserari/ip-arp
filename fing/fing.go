@@ -122,7 +122,7 @@ const (
 	TYPE_OTHER_DEVICE
 )
 
-var db *oui.OuiDb = oui.New("D:\\gopath\\src\\github.com\\abserari\\ip-arp\\go-ouitools\\oui.txt")
+var db *oui.OuiDb = oui.New("./oui.txt")
 
 func Vendor(mac string) (string, error) {
 	if db == nil {
@@ -148,7 +148,7 @@ func ExternalIP() (map[string]string, error) {
 		return nil, err
 	}
 	for _, iface := range ifaces {
-		log.Println(iface)
+		// log.Println(iface)
 		if iface.Flags&net.FlagUp == 0 {
 			continue // interface down
 		}
