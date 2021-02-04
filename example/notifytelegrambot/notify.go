@@ -49,6 +49,7 @@ func main() {
 			case "detect":
 				{
 					notify(bot, true)
+					continue
 				}
 			}
 		}
@@ -106,7 +107,7 @@ func notify(bot *tgbotapi.BotAPI, instance bool) {
 				continue
 			}
 			if v.online == 0 {
-				msgs = append(msgs, fmt.Sprintf("%s online", v.name))
+				msgs = append(msgs, fmt.Sprintf("%s ❤  online", v.name))
 			}
 			v.online = 1
 			v.updated = true
@@ -116,7 +117,7 @@ func notify(bot *tgbotapi.BotAPI, instance bool) {
 			if !v.updated {
 				// offline
 				v.online = 0
-				msgs = append(msgs, fmt.Sprintf("%s offline", v.name))
+				msgs = append(msgs, fmt.Sprintf("%s 😴 offline", v.name))
 			}
 		}
 		log.Println("updated")
