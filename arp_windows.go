@@ -11,6 +11,7 @@ import (
 	"unsafe"
 )
 
+// https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-sendarp
 var SendARP = syscall.MustLoadDLL("iphlpapi.dll").MustFindProc("SendARP")
 
 func ip4ToUint32(ip net.IP) (uint32, error) {

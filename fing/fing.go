@@ -3,7 +3,7 @@
 //      http://golangtc.com/t/52d26aa7320b5237d1000044
 // vendor: http://zhidao.baidu.com/question/37072459.html
 
-package main
+package fing
 
 import (
 	"fmt"
@@ -17,14 +17,7 @@ import (
 	"github.com/j-keck/arping"
 )
 
-func main() {
-	ip := "192.168.0.250"
-	mac, _, err := fing.Mac(ip)
-	if err != nil {
-		log.Fatalf("could not find MAC for %q: %v", ip, err)
-	}
-	fmt.Printf("MAC address for %v is %v\n", ip, mac)
-
+func examplemain() {
 	fing := new(Fing)
 	fing.Detect()
 	fing.Show()
@@ -35,18 +28,20 @@ type Fing struct {
 }
 
 type Device struct {
-	Ip     string
-	Mac    string
-	Vendor string
-	Type   int
+	Ip       string
+	Mac      string
+	Vendor   string
+	Type     int
+	HostName string
 }
 
-func NewDevice(ip, mac, vendor string, t int) *Device {
+func NewDevice(ip, mac, vendor, hostname string, t int) *Device {
 	device := new(Device)
 	device.Ip = ip
 	device.Mac = mac
 	device.Vendor = vendor
 	device.Type = t
+	device.HostName = hostname
 	return device
 }
 
@@ -64,27 +59,39 @@ func (this *Fing) Detect() {
 			log.Println("err :", err, "\n", vendor, " this", ip, "and mac", ownmac, "not match vendor")
 			vendor = "unknown"
 		}
-		this.Devices = append(this.Devices, NewDevice(ip, ownmac, vendor, TYPE_OWN_DEVICE))
+		dnsname, err := net.LookupAddr(ip)
+		if err != nil {
+			dnsname = []string{"unknown"}
+		}
+		this.Devices = append(this.Devices, NewDevice(ip, ownmac, vendor, dnsname[0], TYPE_OWN_DEVICE))
 
 		ipFormat := ip[:strings.LastIndex(ip, ".")+1] + "%d"
+
 		for i := 1; i <= 255; i++ {
 			nextIp := fmt.Sprintf(ipFormat, i)
 			if nextIp != ip {
 				wg.Add(1)
 				go func() {
-					hwAddr, duration, err := fing.Mac(nextIp)
+					hwAddr, _, err := fing.Mac(nextIp)
 					if err == arping.ErrTimeout {
 						log.Printf("IP %s is offline.\n", nextIp)
+					} else if err != nil && err.Error() == "The network name cannot be found." {
+
 					} else if err != nil {
 						log.Printf("IP %s :%s\n", nextIp, err.Error())
 					} else {
-						log.Printf("%s (%s) %d usec\n", nextIp, hwAddr, duration/1000)
+						// log.Printf("%s (%s) %d usec\n", nextIp, hwAddr, duration/1000)
 						vendor, err := Vendor(hwAddr.String())
 						if err != nil {
-							log.Println("err :", err, "\n", vendor, " this", ip, "and mac", ownmac, "not match and jump")
+							// log.Println("err :", err, "\n", vendor, " this", ip, "and mac", ownmac, "not match and jump")
 							vendor = "unknown"
 						}
-						this.Devices = append(this.Devices, NewDevice(nextIp, hwAddr.String(), vendor, TYPE_OTHER_DEVICE))
+						dnsname, err := net.LookupAddr(ip)
+						// log.Println(dnsname)
+						if err != nil {
+							dnsname = []string{"unknown"}
+						}
+						this.Devices = append(this.Devices, NewDevice(nextIp, hwAddr.String(), vendor, dnsname[0], TYPE_OTHER_DEVICE))
 					}
 					wg.Done()
 				}()
@@ -96,9 +103,9 @@ func (this *Fing) Detect() {
 }
 
 func (this *Fing) Show() {
-	fmt.Printf("%3s|%15s|%17s|%20s|%4s\n", "#", "IP", "MAC", "VENDOR", "TYPE")
+	fmt.Printf("%3s|%15s|%17s|%20s|%4s|%20s\n", "#", "IP", "MAC", "VENDOR", "TYPE", "HOSTNAME")
 	for i, device := range this.Devices {
-		fmt.Printf("%3d|%15s|%17s|%20s|%4s\n", i, device.Ip, device.Mac, device.Vendor, this.showType(device.Type))
+		fmt.Printf("%3d|%15s|%17s|%20s|%4s|%20s\n", i, device.Ip, device.Mac, device.Vendor, this.showType(device.Type), device.HostName)
 	}
 }
 
@@ -115,7 +122,7 @@ const (
 	TYPE_OTHER_DEVICE
 )
 
-var db *oui.OuiDb = oui.New("../go-ouitools/oui.txt")
+var db *oui.OuiDb = oui.New("D:\\gopath\\src\\github.com\\abserari\\ip-arp\\go-ouitools\\oui.txt")
 
 func Vendor(mac string) (string, error) {
 	if db == nil {
@@ -140,8 +147,8 @@ func ExternalIP() (map[string]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	for i, iface := range ifaces {
-		log.Println(iface, len(ifaces), i)
+	for _, iface := range ifaces {
+		log.Println(iface)
 		if iface.Flags&net.FlagUp == 0 {
 			continue // interface down
 		}
