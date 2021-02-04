@@ -82,7 +82,7 @@ func notify(bot *tgbotapi.BotAPI, instance bool) {
 			p.Mac = strings.ReplaceAll(p.Mac, "-", ":")
 			// log.Println(p.Mac)
 			if onlineMap[p.Mac] != nil {
-				return
+				continue
 			}
 			var people online
 			people.name = p.Login
@@ -116,8 +116,10 @@ func notify(bot *tgbotapi.BotAPI, instance bool) {
 		for _, v := range onlineMap {
 			if !v.updated {
 				// offline
+				if v.online == 1 {
+					msgs = append(msgs, fmt.Sprintf("%s 😴 xxxxxxxxxxxoffline", v.name))
+				}
 				v.online = 0
-				msgs = append(msgs, fmt.Sprintf("%s 😴 xxxxxxxxxxxoffline", v.name))
 			}
 		}
 		log.Println("updated")
