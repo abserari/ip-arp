@@ -2,6 +2,8 @@ github.com/abserari/quicksilver/fing v0.0.0-20210204111405-a72f6e0b13ff h1:Y9xwo
 github.com/abserari/quicksilver/fing v0.0.0-20210204111405-a72f6e0b13ff/go.mod h1:Br5O18WJxU3N5p0gT/UbwGhzcWGURIvYaPCUdhaN4lY=
 github.com/dutchcoders/go-ouitools v0.0.0-20150909074929-ac8139d3326a h1:k0tlcLlo0xiIQ+PsvXHcMw5lmrWJ2dgtplMk5SnvAuw=
 github.com/dutchcoders/go-ouitools v0.0.0-20150909074929-ac8139d3326a/go.mod h1:iw2+sjeXZHqxa3T+ufyw4bBRZyfp5B4prg1YPMHV4V0=
+github.com/franela/goreq v0.0.0-20171204163338-bcd34c9993f8 h1:a9ENSRDFBUPkJ5lCgVZh26+ZbGyoVJG7yb5SSzF5H54=
+github.com/franela/goreq v0.0.0-20171204163338-bcd34c9993f8/go.mod h1:ZhphrRTfi2rbfLwlschooIH4+wKKDR4Pdxhh+TRoA20=
 github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible h1:2cauKuaELYAEARXRkq2LrJ0yDDv1rW7+wrTEdVL3uaU=
 github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible/go.mod h1:qf9acutJ8cwBUhm1bqgz6Bei9/C/c93FPDljKWwsOgM=
 github.com/j-keck/arping v1.0.1 h1:XrO9juQieAQHE7DlwT7zFLUK2u3Oi/4Uz2B3ZTxvhxg=
